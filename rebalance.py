@@ -35,12 +35,14 @@ def main():
     # get information on account positions
     positions = api.get_positions()
 
-
-    print("------concluded API calls-----")
+    print("\n")
+    print("-------------- PULLED DATA ----------------")
     print("cash:", cash)
     print("equity:", equity)
     for t, pos in positions.items():
         print("{} => quantity: {}\t\t price: {}".format(t, pos.num_shares, pos.current_price))
+    print("-------------------------------------------")
+    print("\n")
 
     # calculate new orders 
     new_orders, cash_rem = calculate_new_orders(cash, equity, positions, portfolio_weight)
@@ -108,17 +110,17 @@ def calculate_new_orders(cash, equity, positions, portfolio_weight):
     # find remaining cash
     remaining_cash = cash
 
-    for t, u in additional_units:
+    for t, u in additional_units.items():
         remaining_cash -= u*positions[t].current_price
 
     remain_alloc = allocate_remaining(positions, remaining_cash) #TODO - first allocate for eligible
 
     # add remaining allocation to additional units - these are the units to buy
-    for t in additional_units.keys():
+    for t in remain_alloc.keys():
         additional_units[t] += remain_alloc[t]
         remaining_cash -= positions[t].current_price
 
-    return additional_units, remaining_cash
+    return (additional_units, remaining_cash)
 
 
 def allocate_remaining(positions, cash_rem):
@@ -135,8 +137,8 @@ def allocate_remaining(positions, cash_rem):
         max_spent = 0
         select = {} # best ticker selection dict
 
-        for pos in positions:
-            price = pos.price
+        for pos in positions.values():
+            price = pos.current_price
             ticker = pos.ticker
 
             if price < cash_rem:
@@ -178,11 +180,12 @@ class colors:
 
 def display_result(new_orders, cash_rem):
     print("--------------- NEW OREDERS ---------------")
-    print("FUND \t\t NEW UNITS")
+    print("FUND \t\t NEW UNITS\n")
     for ticker, new_units in new_orders.items():
-        print(f"{colors.CYAN}{ticker}{colors.ENDC} \t\t {colors.CYAN}{new_units}{colors.ENDC}")
+        print(f"{colors.CYAN}{ticker}{colors.ENDC} \t\t {colors.GREEN}{new_units}{colors.ENDC}")
     print("-------------------------------------------")
     print(f"Remaining cash: ${cash_rem}")
+    print("\n")
 
 
 if __name__ == '__main__':
