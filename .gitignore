@@ -1,0 +1,7 @@
+# local parameters
+**/private
+
+# temporary files
+**temp**
+
+__pycache__
