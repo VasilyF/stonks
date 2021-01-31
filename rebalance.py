@@ -5,6 +5,8 @@ from questrade import Questrade, Position
 #import sys
 
 
+DEMO_CASH = 3500
+
 # TODO
 '''
 - define methods as static and class where appropriate
@@ -29,8 +31,8 @@ def main():
     api = Questrade()
 
     # get information on account balances
-    cash = api.get_cash()
-    equity = api.get_total_equity()
+    cash = api.get_cash() + DEMO_CASH
+    equity = api.get_total_equity() + DEMO_CASH
 
     # get information on account positions
     positions = api.get_positions()
@@ -47,8 +49,15 @@ def main():
     # calculate new orders 
     new_orders, cash_rem = calculate_new_orders(cash, equity, positions, portfolio_weight)
 
+    actual_weight = {}
+    target_weight = {}
+
+    for pos in positions.values():
+        actual_weight[pos.ticker] = (pos.num_shares + new_orders[pos.ticker])*pos.current_price/equity*100
+        target_weight[pos.ticker] = portfolio_weight[pos.ticker]*100
+
     # print to console
-    display_result(new_orders, cash_rem)
+    display_result(new_orders, cash_rem, actual_weight, target_weight)
     
     return
 
@@ -182,11 +191,11 @@ class colors:
     GREEN = '\033[92m'
     ENDC = ENDC = '\033[0m'
 
-def display_result(new_orders, cash_rem):
+def display_result(new_orders, cash_rem, actual_weight, target_weight):
     print("--------------- NEW OREDERS ---------------")
-    print("FUND \t\t NEW UNITS\n")
+    print("FUND \t NEW UNITS \t PORTFOLIO WEIGHT \t TARGET WEIGHT \n")
     for ticker, new_units in new_orders.items():
-        print(f"{colors.CYAN}{ticker}{colors.ENDC} \t\t {colors.GREEN}{new_units}{colors.ENDC}")
+        print(f"{colors.CYAN}{ticker}{colors.ENDC} \t {colors.GREEN}{new_units}{colors.ENDC} \t\t {actual_weight[ticker]:.2f}%    \t\t {target_weight[ticker]:.2f}%")
     print("-------------------------------------------")
     print(f"Remaining cash: ${cash_rem:.2f}")
     print("\n")
