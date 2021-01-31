@@ -37,10 +37,10 @@ def main():
 
     print("\n")
     print("-------------- PULLED DATA ----------------")
-    print("cash:", cash)
-    print("equity:", equity)
+    print(f"cash:\t${cash:.2f}")
+    print(f"equity:\t${equity:.2f}\n")
     for t, pos in positions.items():
-        print("{} => quantity: {}\t\t price: {}".format(t, pos.num_shares, pos.current_price))
+        print("{} => quantity: {}\t\t price: ${:.2f}".format(t, pos.num_shares, pos.current_price))
     print("-------------------------------------------")
     print("\n")
 
