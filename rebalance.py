@@ -125,6 +125,8 @@ def calculate_new_orders(cash, equity, positions, portfolio_weight):
 
 def allocate_remaining(positions, cash_rem):
 
+    
+
     best_select = {} # {cash_rem -> selection dict {ticker -> units}}
     max_util = {} # {cash_rem -> max_spent}
 
@@ -138,7 +140,7 @@ def allocate_remaining(positions, cash_rem):
         select = {} # best ticker selection dict
 
         for pos in positions.values():
-            price = pos.current_price
+            price = trunc(pos.current_price *100)
             ticker = pos.ticker
 
             if price < cash_rem:
@@ -147,14 +149,16 @@ def allocate_remaining(positions, cash_rem):
                     # best selection for subcase is known, 
                     # current selection includes extra unit for current ticker
                     curr_select = best_select[new_cash_rem]
-                    if ticker in curr_select:
-                        curr_select[ticker] += 1    # previously included in selection
-                    else:
-                        curr_select[ticker] = 1     # new inclusion in selection
 
                 else:
                     # subcase not yet solved
                     curr_select = get_best_select(new_cash_rem)
+
+                # update curr_select to increment current position ticker
+                if ticker in curr_select:
+                    curr_select[ticker] += 1    # previously included in selection
+                else:
+                    curr_select[ticker] = 1     # new inclusion in selection
                 
                 # current max is max of subcase + price of ticker
                 curr_max = max_util[new_cash_rem] + price
@@ -170,7 +174,7 @@ def allocate_remaining(positions, cash_rem):
 
         return select
     
-    return get_best_select(cash_rem)
+    return get_best_select(trunc(cash_rem*100))
 
 
 class colors:
@@ -184,7 +188,7 @@ def display_result(new_orders, cash_rem):
     for ticker, new_units in new_orders.items():
         print(f"{colors.CYAN}{ticker}{colors.ENDC} \t\t {colors.GREEN}{new_units}{colors.ENDC}")
     print("-------------------------------------------")
-    print(f"Remaining cash: ${cash_rem}")
+    print(f"Remaining cash: ${cash_rem:.2f}")
     print("\n")
 
 
