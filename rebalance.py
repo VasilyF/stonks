@@ -2,10 +2,6 @@
 
 from math import trunc
 from questrade import Questrade, Position
-#import sys
-
-
-DEMO_CASH = 3500
 
 # TODO
 '''
@@ -31,8 +27,8 @@ def main():
     api = Questrade()
 
     # get information on account balances
-    cash = api.get_cash() + DEMO_CASH
-    equity = api.get_total_equity() + DEMO_CASH
+    cash = api.get_cash()
+    equity = api.get_total_equity()
 
     # get information on account positions
     positions = api.get_positions()
