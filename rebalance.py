@@ -129,18 +129,16 @@ def calculate_new_orders(cash, equity, positions, portfolio_weight):
 
 
 def allocate_remaining(positions, cash_rem):
-
     
-
     best_select = {} # {cash_rem -> selection dict {ticker -> units}}
     max_util = {} # {cash_rem -> max_spent}
-
 
     '''
     * returns a dictionary {ticker -> units} of how to spend remaining cash
     * populates best_select and max_util dicts up to case called
     '''
     def get_best_select(cash_rem):
+
         max_spent = 0
         select = {} # best ticker selection dict
 
@@ -153,7 +151,7 @@ def allocate_remaining(positions, cash_rem):
                 if new_cash_rem in best_select:   
                     # best selection for subcase is known, 
                     # current selection includes extra unit for current ticker
-                    curr_select = best_select[new_cash_rem]
+                    curr_select = best_select[new_cash_rem].copy()
 
                 else:
                     # subcase not yet solved
@@ -175,7 +173,7 @@ def allocate_remaining(positions, cash_rem):
                         max_spent = curr_max
         
         max_util[cash_rem] = max_spent
-        best_select[cash_rem] = select
+        best_select[cash_rem] = select.copy()
 
         return select
     
